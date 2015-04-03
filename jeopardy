@@ -1,0 +1,152 @@
+/*****************************************
+ * Assignment <<< Final Project >>
+ * Name:         <<< Nick Vernon >>>
+ * Course:       CSC 103 - Creative Computing - Fall 2014
+ * Submitted:    <<< December 4, 2014 >>>
+ * 
+ * <<< This is a Jeopardy game that the user can play
+ with other people, or use to challenge their own
+ knowledge. Clicking the mouse will take the user from
+ one question and answer to the next. The scoreboard 
+ is controlled by pressing '2' to increase players1's 
+ score and '1' to decrease it; '4' to increase player2's 
+ score and '3' to decrease it. The spacebar can be pressed 
+ at any time to take the user back to the home screen. >>>
+ *
+ ***********************************************/
+
+import big.data.*;
+PFont body;
+PFont title;
+int displaya;
+int r;
+int x = 0;
+int player1 = 0;
+int player2 = 0;
+Group[] groupQ;
+//*** I could not figure out how to replace these with the correct symbols...
+//'&apos;' == ','
+//'&quot;' == '"'
+//'&amp;' == '&'
+
+void setup() {
+  size(728, 546);
+  background(#0347FC);
+  body = loadFont("ITFDevanagari-Bold-48.vlw");
+  title = loadFont("MarkerFelt-Thin-48.vlw");
+  DataSource.initializeProcessing(this);
+  DataSource ds = DataSource.connectCSV("data/jeopardy_5000.csv");
+  ds.load();
+  groupQ = ds.fetchArray("Group", "row/Category", "row/Question", "row/Value", "row/Answer");
+
+  r = round(random((float) groupQ.length)); // random grouping of question, category, value, and then answer when you press the mouse
+
+/// home page text
+  fill(255, 255, 255);
+  textFont(title, 62);
+  text("Welcome to \nJeopardy!", 50, 375);
+  textFont(body, 20);
+  text("Press the mouse to begin!", 55, 500);
+  text("Press 2 to increase Player 1's score. \nPress 1 to decrease it.", 415, 345);
+  text("Press 4 to increase Player 2's score. \nPress 3 to decrease it.", 415, 390);
+  text("Player 1", 430, 530);
+  text("Player 2", 580, 530);
+  text("Rules: \n1. Add 1 to your score when you say the correct answer. \n2. Subtract 1 from your score when you say an incorrect answer. \n3. Passing on a question leaves your score as it is. \n4. For correct answers to questions valued over 1000, \n     reward yourself 2 points.", 100, 50);
+  text("Remember: You can always press spacebar to return to the home screen!", 50, 200);
+}
+
+void draw() {
+  DataSource ds = DataSource.connectCSV("data/jeopardy_5000.csv"); /// calls that data source
+  ds.load();
+
+  /// player1 score box
+  fill(#AF21E8);
+  rect(425, 425, 125, 75);
+  textFont(body, 72);        
+  fill(#F00206);                
+  text(nf(player1, 1), 445, 488); 
+
+  /// player2 score box  
+  fill(#AF21E8);
+  rect(575, 425, 125, 75);
+  textFont(body, 72);        
+  fill(#FCCB03);                
+  text(nf(player2, 1), 595, 488); 
+
+  /// Switches between random question, corresponding answer, then new random questions, new corresponding answer
+  /// with each mouse click.
+  if (x==0 && mousePressed) {
+    background(#0347FC); 
+    groupQ[r].textQ();
+    x = 1;
+  } else if (x == 1 && mousePressed) {
+    background(#0347FC);
+    groupQ[r].textA();
+    r = round(random((float) groupQ.length));
+    x = 0;
+  }
+}
+
+/// Used a class so that the random values for category, answer, etc., would all be from the same row of data
+class Group {
+  String question, category, value, answer;
+  Group(String question, String category, String value, String answer) {
+    this.question = question;
+    this.category = category;
+    this.value = value;
+    this.answer = answer;
+  }
+  /// Displays category, value, and question
+  void textQ() {
+    String s =  "Category: " + this.question + "\nValue: " + this.value + "\nQuestion: " + this.category + ".";
+    fill(255);
+    textFont(body);
+    textSize(36);
+    text(s, 25, 25, 700, 480);
+  }
+  /// Displays answer
+  void textA() {
+    String a = "Answer: " + this.answer;
+    fill(255);
+    textSize(36);
+    text(a, 25, 250, 700, 500);
+  }
+}
+
+/// Controls the score board for player1 and player2
+void keyPressed() {
+  /// add to player1 by pressing '2', subtract by pressing '1'
+  if (key == '2') {
+    player1 = (player1 + 1)%999;
+    redraw();
+  } 
+  if (key == '1') {
+    player1 = (player1 - 1);
+    redraw();
+  } 
+  /// add to player2 by pressing '4', subtract by pressing '3'
+  if (key == '4') {
+    player2 = (player2 + 1)%999;
+    redraw();
+  } else if (key == '3') {
+    player2 = (player2 - 1);
+    redraw();
+  }
+  /// send game back to start page
+  if (key == ' ') {
+    setup();
+  }
+}
+
+/*
+/// In order allow the user to choose which $ value the random question will be...
+/// I couldn't quite figure out this code, but I felt like the score feature was more
+/// important anyways. Perhaps it would look something like this?
+ int getValue(){
+ if (keyPressed == "1");
+ return (this.value < 200);
+ if (keyPressed == "2");
+ return ((this.value > 100)&&(this.value < 300));
+ ...and so on...
+ }
+ */
