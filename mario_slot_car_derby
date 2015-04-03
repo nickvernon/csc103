@@ -1,0 +1,87 @@
+PImage qimg;
+PImage pimg;
+PImage timg;
+PImage yimg;
+float speed = 30.0;
+float qxpos = 0;
+float qleft = 0;
+float qright = 0;
+float pxpos = 0;
+float pleft = 0;
+float pright = 0;
+float txpos = 0;
+float tleft = 0;
+float tright = 0;
+float yxpos = 0;
+float yleft = 0;
+float yright = 0;
+
+void setup(){
+  size(1200, 750);
+  qimg = loadImage("wario.gif");
+  pimg = loadImage("luigi.gif");
+  timg = loadImage("dk.gif");
+  yimg = loadImage("bowser.gif");
+}
+
+void draw(){
+  background(#484747);
+  fill(#FAEE00);
+  rect(0,175,1200,25);
+  rect(0,375,1200,25);
+  rect(0,575,1200,25);
+  noStroke();
+  qxpos += (qright - qleft) * speed;
+  if (qxpos>width){
+    qxpos=0;
+  }
+  pxpos += (pright - pleft) * speed;
+  if (pxpos>width){
+    pxpos=0;
+  }
+  txpos += (tright - tleft) * speed;
+  if (txpos>width){
+    txpos=0;
+  }
+  yxpos += (yright - yleft) * speed;
+  if (yxpos>width){
+    yxpos=0;
+  }
+  image(qimg, qxpos, 0);
+  image(pimg, pxpos, 150);
+  image(timg, txpos, 325);
+  image(yimg, yxpos, 525);
+  
+  
+}
+  
+void keyPressed(){
+  if (key == 'q'){
+    qright = 1;
+  }
+  if (key == 'p'){
+    pright = 1;
+  }
+  if (key == 't'){
+    tright = 1;
+  }
+  if (key == 'y'){
+    yright = 1;
+  }
+}
+
+void keyReleased(){
+  if (key == 'q'){
+    qright = 0;
+  }
+  if (key == 'p'){
+    pright = 0;
+  }
+  if (key == 't'){
+    tright = 0;
+  }
+  if (key == 'y'){
+    yright = 0;
+}
+}
+
